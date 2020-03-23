@@ -1,106 +1,81 @@
-// from data.js
+// From data.js
 var tableData = data;
 
-// find different element
-var tbody = d3.select("#ufo-table > tbody");
+// Filter button
 var button = d3.select("#filter-btn");
-var button_reset = d3.select("#reset-btn")
-var input_dt = d3.select("#datetime");
-var input_ct = d3.select("#country");
-var input_st = d3.select("#state");
-var input_city = d3.select("#city");
-var input_shape = d3.select("#shape");
 
-// defalt: show all data
-showData(tableData);
+// Select the tbody in html to render dataset and reference
+var tbody = d3.select("tbody")
 
-// when filter button is clicked
-button.on("click", handelFind);
-button_reset.on("click", handelReset);
+// Populate the dataset
+data.forEach((ufoSightings) => {
+    var row = tbody.append("tr");
+    Object.entries(ufoSightings).forEach(([key, value]) => {
+      var cell = row.append("td");
+      cell.text(value);
+    });
+  });
 
-// DROPDOWN OPTIONS
-// dates
-dates = {}
-tableData.forEach(datum => {
-    var date = datum.datetime;
-    if (date in dates) dates[date] += 1;
-    else dates[date] = 1;
-})
-// country
-countries = {}
-tableData.forEach(datum => {
-    var ct = datum.country;
-    if (ct in countries) countries[ct] += 1;
-    else countries[ct] = 1;
-})
-// states
-states = {}
-tableData.forEach(datum => {
-    var st = datum.state;
-    if (st in states) states[st] += 1;
-    else states[st] = 1;
-})
-// cities
-cities = {}
-tableData.forEach(datum => {
-    var city = datum.city;
-    if (city in cities) cities[city] += 1;
-    else cities[city] = 1;
-})
 
-//-----------------------------------------------
-//-------------FUNCTIONS-------------------------
-//-----------------------------------------------
+// Function for refresh stop
+var dateFilter = () => {
+  // Enter key Fix
+  d3.event.preventDefault();
+  
+  // select Input element
+  var inputElement = d3.select('#datetime');
 
-// function that append result from list to table 
-function showData(dataList){
-    dataList.forEach((datum) =>{
+  // Get the value property of the input element
+  var inputValue = inputElement.property("value");
+  
+  // d3.event.prevent.Default()
+
+  console.log(inputValue);
+  console.log(inputElement);
+
+// Use the variable to store in the data 
+  var filteredData = tableData.filter(data => data.datetime === inputValue);
+
+  console.log(filteredData)
+
+
+  // Next, select the unordered list input
+  var list = d3.select("tbody");
+
+  // Remove some of the others from the list
+  list.html("");
+
+filteredData.forEach((ufoSightings) => {
+  var row = tbody.append("tr");
+  Object.entries(ufoSighting).forEach(([key, value]) => {
+  var cell = row.append("td");
+  cell.text(value);
+  });
+});
+
+};
+
+var input = d3.select("#datetime");
+// Allow the input field to make a change for any typed text that is entered.
+input.on("change", function() {
+    var typedtext = d3.event.target.value;
+    console.log(typedtext);
+    d3.select("tbody").html("<tbody></tbody>");
+    var filteredData2 = tableData.filter(event => event.datetime == typedtext);
+    console.log(filteredData2)
+    filteredData2.forEach((ufoSighting) => {
         var row = tbody.append("tr");
-        Object.entries(datum).forEach(([key, val]) => {
-            row.append("td").text(val);
-        })
-    })
-}
+        Object.entries(ufoSighting).forEach(([key, value]) => {
+          var cell = row.append("td");
+          cell.text(value);
+        });
+      });
 
-// function that filter list based on date, 
-// and show filtered list to table
-function handelFind(){
-    var date_input = input_dt.property("value");
+    });
 
-    filtered = tableData.filter(filterDate).filter(filterCountry).filter(filterState).filter(filterCity).filter(filterShape);
-    tbody.text("")
-    showData(filtered);
-}
 
-// function that reset the table to all data
-function handelReset(){
-    tbody.text("");
-    d3.selectAll(".form-control").property("value", "");
-    showData(tableData);
-}
+// button.on("click", handleInput);
+button.on('click', dateFilter);
 
-// filter functions
-function filterDate(table){
-    text = input_dt.property("value");
-    if ( text == "") return table;  
-    else return table.datetime == text;
-}
-function filterCountry(table){
-    text = input_ct.property("value");
-    if ( text == "") return table; 
-    else return table.country == text;
-}
-function filterState(table){
-    text = input_st.property("value");
-    if ( text == "") return table; 
-    else return table.state == text;
-}
-function filterCity(table){
-    text = input_city.property("value");
-    if ( text == "") return table; 
-    else return table.city == text;
-}
-function filterShape(table){
-    text = input_shape.property("value");
-    if ( text == "") return table; 
-    else return table.shape == text;
+//Enter fix 
+d3.select("form").on('submit', dateFilter);
