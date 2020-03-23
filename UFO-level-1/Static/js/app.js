@@ -16,10 +16,8 @@ data.forEach((ufoSightings) => {
     });
   });
 
-
-// Function for refresh stop
 var dateFilter = () => {
-  // Enter key Fix
+  // Enter a key Fix
   d3.event.preventDefault();
   
   // select Input element
@@ -77,5 +75,5 @@ input.on("change", function() {
 // button.on("click", handleInput);
 button.on('click', dateFilter);
 
-//Enter fix 
+//Enter the fix key 
 d3.select("form").on('submit', dateFilter);
