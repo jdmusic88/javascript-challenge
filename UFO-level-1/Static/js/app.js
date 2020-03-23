@@ -1,50 +1,106 @@
 // from data.js
 var tableData = data;
 
-// select the button - Question: does it need to be selected with the id?  or can class be used? or type?  
-//try all of these at the end...once it is working
+// find different element
+var tbody = d3.select("#ufo-table > tbody");
 var button = d3.select("#filter-btn");
+var button_reset = d3.select("#reset-btn")
+var input_dt = d3.select("#datetime");
+var input_ct = d3.select("#country");
+var input_st = d3.select("#state");
+var input_city = d3.select("#city");
+var input_shape = d3.select("#shape");
 
-//get the reference to the tbody...
-var tbody = d3.select("tbody");
+// defalt: show all data
+showData(tableData);
 
-button.on("click", function() {
-    // select the input element
-    var inputElement = d3.select("#datetime");
+// when filter button is clicked
+button.on("click", handelFind);
+button_reset.on("click", handelReset);
 
-    // Get the value property of the input element
-    var inputValue = inputElement.property("value");
+// DROPDOWN OPTIONS
+// dates
+dates = {}
+tableData.forEach(datum => {
+    var date = datum.datetime;
+    if (date in dates) dates[date] += 1;
+    else dates[date] = 1;
+})
+// country
+countries = {}
+tableData.forEach(datum => {
+    var ct = datum.country;
+    if (ct in countries) countries[ct] += 1;
+    else countries[ct] = 1;
+})
+// states
+states = {}
+tableData.forEach(datum => {
+    var st = datum.state;
+    if (st in states) states[st] += 1;
+    else states[st] = 1;
+})
+// cities
+cities = {}
+tableData.forEach(datum => {
+    var city = datum.city;
+    if (city in cities) cities[city] += 1;
+    else cities[city] = 1;
+})
 
-    console.log(inputValue);
-    
-    var filteredData = tableData.filter(event => event.datetime == inputValue);
+//-----------------------------------------------
+//-------------FUNCTIONS-------------------------
+//-----------------------------------------------
 
-    //console.log(filteredData);
-
-    filteredData.forEach((ufoSighting) => {
+// function that append result from list to table 
+function showData(dataList){
+    dataList.forEach((datum) =>{
         var row = tbody.append("tr");
-        Object.entries(ufoSighting).forEach(([key, value]) => {
-          var cell = row.append("td");
-          cell.text(value);
-        });
-      });
+        Object.entries(datum).forEach(([key, val]) => {
+            row.append("td").text(val);
+        })
+    })
+}
 
-});
+// function that filter list based on date, 
+// and show filtered list to table
+function handelFind(){
+    var date_input = input_dt.property("value");
 
-var input = d3.select("#datetime");
-// Input fields can trigger a change event when new text is entered.
-input.on("change", function() {
-    var newText = d3.event.target.value;
-    console.log(newText);
-    d3.select("tbody").html("<tbody></tbody>");
-    var filteredData2 = tableData.filter(event => event.datetime == newText);
-    console.log(filteredData2)
-    filteredData2.forEach((ufoSighting) => {
-        var row = tbody.append("tr");
-        Object.entries(ufoSighting).forEach(([key, value]) => {
-          var cell = row.append("td");
-          cell.text(value);
-        });
-      });
+    filtered = tableData.filter(filterDate).filter(filterCountry).filter(filterState).filter(filterCity).filter(filterShape);
+    tbody.text("")
+    showData(filtered);
+}
 
-    });
+// function that reset the table to all data
+function handelReset(){
+    tbody.text("");
+    d3.selectAll(".form-control").property("value", "");
+    showData(tableData);
+}
+
+// filter functions
+function filterDate(table){
+    text = input_dt.property("value");
+    if ( text == "") return table;  
+    else return table.datetime == text;
+}
+function filterCountry(table){
+    text = input_ct.property("value");
+    if ( text == "") return table; 
+    else return table.country == text;
+}
+function filterState(table){
+    text = input_st.property("value");
+    if ( text == "") return table; 
+    else return table.state == text;
+}
+function filterCity(table){
+    text = input_city.property("value");
+    if ( text == "") return table; 
+    else return table.city == text;
+}
+function filterShape(table){
+    text = input_shape.property("value");
+    if ( text == "") return table; 
+    else return table.shape == text;
